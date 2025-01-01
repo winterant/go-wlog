@@ -1,4 +1,4 @@
-module github.com/winterant/myslog
+module github.com/winterant/wlog
 
 go 1.21
 

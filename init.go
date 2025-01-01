@@ -1,4 +1,4 @@
-package myslog
+package wlog
 
 import (
 	"io"

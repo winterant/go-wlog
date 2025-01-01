@@ -1,18 +1,21 @@
-# myslog
+# go-wslog
 
-基于slog增加了一种Handler，能够打印出易于浏览的日志格式。
+---
 
-# 🔨 安装
+`go-wlog` is a logging library based on `slog` that adds a Handler capable of printing logs in a format that is easy to
+browse.
+
+# 🔨 Installation
 
 ```bash
-go get -u github.com/winterant/myslog
+go get -u github.com/winterant/wlog
 ```
 
-## 🪤 示例
+## 🪤 Examples
 
-### 使用默认logger
+### Use default logger
 
-日志将输出到`os.Stdout`和文件`./log/main.log`。
+The log will be output to `os.Stdout` and the file `./log/main.log`.
 
 ```go
 package main
@@ -20,26 +23,24 @@ package main
 import (
 	"context"
 
-	"github.com/winterant/myslog"
+	"github.com/winterant/wlog"
 )
 
 func main() {
-	ctx := myslog.ContextWithArgs(context.Background(), "taskId", "tsk-thisisataskid", "tag", "mytag") // 利用context确保每一条都输出某些信息
-	myslog.Debug(ctx, "(acquiescent myslog.Logger)process is starting...")
-	myslog.Info(ctx, "My name is %s.", "Winterant")
+	ctx := wlog.ContextWithArgs(context.Background(), "taskId", "tsk-thisisataskid", "tag", "mytag")
+	wlog.Debug(ctx, "(acquiescent myslog.Logger)process is starting...")
+	wlog.Info(ctx, "My name is %s.", "Winterant")
 }
 ```
 
-日志：
+log:
 
 ```
 2024-10-02 12:21:32.365340 DEBUG /Users/jinglong/Projects/github/myslog/main.go:12 [taskId=tsk-thisisataskid] [tag=mytag] process is starting...
 2024-10-02 12:21:32.365816 INFO  /Users/jinglong/Projects/github/myslog/main.go:15 [taskId=tsk-thisisataskid] [tag=mytag] My name is Winterant.
 ```
 
-### 手动初始化默认logger
-
-只需添加一个init函数
+### Custom config
 
 ```go
 package main
@@ -50,8 +51,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/natefinch/lumberjack"
-	"github.com/winterant/myslog"
+	"github.com/winterant/wlog"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func init() {
@@ -64,25 +65,25 @@ func init() {
 		Compress:   false,            // 是否压缩/归档旧文件
 		LocalTime:  true,             // 使用本地时间创建时间戳
 	}, os.Stdout)
-	myslog.InitDefaultLogger(writers, slog.LevelDebug)
+	wlog.InitDefaultLogger(writers, slog.LevelDebug)
 }
 
 func main() {
 	ctx := context.Background()
-	ctx = myslog.ContextWithArgs(ctx, "taskId", "tsk-thisisataskid", "tag", "mytag") // 利用context确保每一条都输出某些信息
-	myslog.Debug(ctx, "process is starting...")
-	myslog.Info(ctx, "My name is %s.", "Winterant")
+	ctx = wlog.ContextWithArgs(ctx, "taskId", "tsk-thisisataskid", "tag", "mytag") // 利用context确保每一条都输出某些信息
+	wlog.Debug(ctx, "process is starting...")
+	wlog.Info(ctx, "My name is %s.", "Winterant")
 }
 ```
 
-日志：
+log:
 
 ```
 2024-10-02 11:42:17.227797 DEBUG /Users/jinglong/Projects/github/myslog/main.go:34 [taskId=tsk-thisisataskid] [tag=mytag] process is starting...
 2024-10-02 11:42:17.228035 INFO  /Users/jinglong/Projects/github/myslog/main.go:37 [taskId=tsk-thisisataskid] [tag=mytag] My name is Winterant.
 ```
 
-### 使用原生slog.Logger
+### Get slog.Logger
 
 ```go
 package main
@@ -94,8 +95,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/natefinch/lumberjack"
-	"github.com/winterant/myslog"
+	"github.com/winterant/wlog"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func GetLogger() *slog.Logger {
@@ -108,27 +109,26 @@ func GetLogger() *slog.Logger {
 		LocalTime:  true,             // 使用本地时间创建时间戳
 	}, os.Stdout)
 
-	handler := myslog.NewPrettyHandler(myslog.WithWriter(writers), myslog.WithLever(slog.LevelDebug))
+	handler := wlog.NewPrettyHandler(wlog.WithWriter(writers), wlog.WithLever(slog.LevelDebug))
 	return slog.New(handler).With("key", "display_in_each_log")
 }
 
 func main() {
 	slogger := GetLogger()
-	ctx := myslog.ContextWithArgs(context.Background(), "taskId", "tsk-thisisatask")
+	ctx := wlog.ContextWithArgs(context.Background(), "taskId", "tsk-thisisatask")
 	slogger.Log(ctx, slog.LevelDebug, "process is starting...")
 	slogger.Log(ctx, slog.LevelInfo, fmt.Sprintf("My name is %s.", "Winterant"), "money", "9999999")
 }
-
 ```
 
-日志：
+log:
 
 ```
 2024-10-01 21:05:59.713409 DEBUG /Users/jinglong/Projects/github/myslog/main.go:35 [key=display_in_each_log] [taskId=tsk-thisisatask] process is starting...
 2024-10-01 21:05:59.714219 INFO  /Users/jinglong/Projects/github/myslog/main.go:38 [key=display_in_each_log] [taskId=tsk-thisisatask] [money=9999999] My name is Winterant.
 ```
 
-## 🚛 附录
+## 🚛 Appendix
 
 ### filebeat日志收集配置
 

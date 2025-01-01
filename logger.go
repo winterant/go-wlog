@@ -1,4 +1,4 @@
-package myslog
+package wlog
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ var defaultLogger *slog.Logger
 
 // InitDefaultLogger reinitializes the default logger instead of acquiescent.
 func InitDefaultLogger(writer io.Writer, logLevel slog.Level, options ...HandlerOption) {
-	options = append(options, WithWriter(writer), WithLever(logLevel), WithCallerDepth(2))
+	options = append(options, WithWriter(writer), WithLever(logLevel), withCallerDepth(2))
 	defaultLogger = slog.New(NewPrettyHandler(options...))
 }
 

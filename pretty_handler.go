@@ -1,4 +1,4 @@
-package myslog
+package wlog
 
 import (
 	"bytes"
@@ -32,19 +32,19 @@ func WithWriter(writer io.Writer) HandlerOption {
 	}
 }
 
-func WithCodeSource(addSource bool) HandlerOption {
-	return func(handler *PrettyHandler) {
-		handler.addSource = addSource
-	}
-}
-
 func WithLever(level slog.Level) HandlerOption {
 	return func(handler *PrettyHandler) {
 		handler.level = level
 	}
 }
 
-func WithCallerDepth(depth int) HandlerOption {
+func WithCodeSource(addSource bool) HandlerOption {
+	return func(handler *PrettyHandler) {
+		handler.addSource = addSource
+	}
+}
+
+func withCallerDepth(depth int) HandlerOption {
 	return func(handler *PrettyHandler) {
 		handler.callerDepth = depth
 	}
