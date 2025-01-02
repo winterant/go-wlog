@@ -43,34 +43,8 @@ func Error(ctx context.Context, format string, args ...any) {
 }
 
 func log(ctx context.Context, level slog.Level, format string, args ...any) {
-	defaultLogger.Log(ctx, level, safeSprintf(format, args...))
-}
-
-func safeSprintf(format string, args ...interface{}) string {
-	var buffer bytes.Buffer
-	count := 0
-	length := len(format)
-	for i := 0; i < length; i++ {
-		if format[i] == '%' {
-			// Check if this '%' is independent
-			isIndependent := true
-			if (i > 0 && format[i-1] == '%') || (i < length-1 && format[i+1] == '%') {
-				isIndependent = false
-			}
-			// If it's an independent '%', decide whether to keep or replace
-			if isIndependent {
-				if count < len(args) {
-					buffer.WriteByte('%')
-				} else {
-					buffer.WriteString("%%")
-				}
-				count++
-			} else {
-				buffer.WriteByte('%')
-			}
-		} else {
-			buffer.WriteByte(format[i])
-		}
+	if len(args) > 0 {
+		format = fmt.Sprintf(format, args...)
 	}
-	return fmt.Sprintf(buffer.String(), args...)
+	defaultLogger.Log(ctx, level, format)
 }
