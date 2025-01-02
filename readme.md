@@ -1,8 +1,6 @@
-# go-wslog
+# wlog
 
----
-
-`go-wlog` is a logging library based on `slog` that adds a Handler capable of printing logs in a format that is easy to
+`wlog` is a golang logging library based on `slog` that adds a Handler capable of printing logs in a format that is easy to
 browse.
 
 # 🔨 Installation
